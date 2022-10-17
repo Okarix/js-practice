@@ -117,16 +117,20 @@ window.addEventListener('DOMContentLoaded', function () {
         modal = document.querySelector('.modal'), // получаем само модальное окно
         modalCloseBtn = document.querySelector('[data-close]'); // кнопка закрытия окна
 
+    function openModal() { // функция открытия модального окна
+        // modal.classList.add('show');
+        // modal.classList.remove('hide');
+        modal.classList.toggle('hide');
+        document.body.style.overflow = 'hidden'; // запрещаем скроллить
+        clearInterval(modalTimerId);
+    }
+
+
     modalTrigger.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // modal.classList.add('show');
-            // modal.classList.remove('hide');
-            modal.classList.toggle('hide');
-            document.body.style.overflow = 'hidden'; // запрещаем скроллить
-        }); // показываем наше модальное окно
+        btn.addEventListener('click', openModal); // показываем наше модальное окно
     }); // используем метод для перебора всех кнопок на странице  
 
-    function closeModal() {
+    function closeModal() { // функция закрытия модального окна
         // modal.classList.add('hide');
         // modal.classList.remove('show');
         modal.classList.toggle('hide');
@@ -146,4 +150,15 @@ window.addEventListener('DOMContentLoaded', function () {
             closeModal();
         }
     }); // будем закрывать наше окно по нажатию на клавишу esc
+
+    const modalTimerId = setTimeout(openModal, 5000);
+
+    function showModalByScroll() { // функция которая показывает окно при скролле до конца
+        if (window.pageYOffset + this.document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        } // условие для вызова окна 
+    }
+
+    window.addEventListener('scroll', showModalByScroll); // если пользователь прокрутит сайт до конца, вызовется модальное окно
 }); //техническая функция загрузки DOM

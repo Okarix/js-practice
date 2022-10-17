@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
 
-    //timer
+    // Timer
 
     const deadline = '2022-10-27'; //  конечная дата
 
@@ -111,4 +111,39 @@ window.addEventListener('DOMContentLoaded', function () {
     setClock('.timer', deadline); // запускаем функцию установки времени для определенного таймера. передаем первым аргументом тот таймер на сайте на который нужно установить отсчет. а вторым аргументом сам дедлайн в формате строчки 
 
 
+    // Modal
+
+    const modalTrigger = document.querySelectorAll('[data-modal]'), // кнопки которые будут триггерить наше модальное окно(открывает)
+        modal = document.querySelector('.modal'), // получаем само модальное окно
+        modalCloseBtn = document.querySelector('[data-close]'); // кнопка закрытия окна
+
+    modalTrigger.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // modal.classList.add('show');
+            // modal.classList.remove('hide');
+            modal.classList.toggle('hide');
+            document.body.style.overflow = 'hidden'; // запрещаем скроллить
+        }); // показываем наше модальное окно
+    }); // используем метод для перебора всех кнопок на странице  
+
+    function closeModal() {
+        // modal.classList.add('hide');
+        // modal.classList.remove('show');
+        modal.classList.toggle('hide');
+        document.body.style.overflow = ''; // разрешаем скроллить
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal); // закрываем наше окно
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    }); // закрываем окно по нажатию на подложку
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hide')) {
+            closeModal();
+        }
+    }); // будем закрывать наше окно по нажатию на клавишу esc
 }); //техническая функция загрузки DOM

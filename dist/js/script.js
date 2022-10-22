@@ -287,25 +287,39 @@ window.addEventListener('DOMContentLoaded', function () {
   // Ипользуем классы для карточек
 
   class MenuCard {
-    constructor(src, alt, title, descr, price, parentSelector) {
-      this.src = src;
+    constructor(src, alt, title, descr, price, parentSelector, ...classes) {
+      this.src = src; // записываем свойства
+
       this.alt = alt;
       this.title = title;
       this.descr = descr;
       this.price = price;
-      this.parent = document.querySelector(parentSelector);
+      this.classes = classes; // если будут добавлять не предвиденные класы то мы их добавим с помощью rest
+
+      this.parent = document.querySelector(parentSelector); // получаем родителя(куда именно в верстку будет вставляться наша созданная верствка)
+
       this.transfer = 37;
       this.changeToUAH();
-    }
+    } // получаем аргументы для конструктора
+
 
     changeToUAH() {
       this.price = this.price * this.transfer;
-    }
+    } // метод который будет заниматьтся конвертацией валют
+
 
     render() {
-      const element = document.createElement('div');
-      element.innerHTML = `
-                <div class="menu__item">
+      const element = document.createElement('div'); // создаем элеемент, чтобы поместить его на страницу
+
+      if (this.classes === 0) {
+        // проверка что ничего не передано в рест(рест всегда возвращает пустой массив)
+        this.element = 'menu__item';
+        element.classList.add(this.element);
+      } else {
+        this.classes.forEach(className => element.classList.add(className));
+      }
+
+      element.innerHTML = ` 
                     <img src=${this.src} alt=${this.alt} />
                     <h3 class="menu__item-subtitle">${this.title}</h3>
                     <div class="menu__item-descr">
@@ -316,18 +330,21 @@ window.addEventListener('DOMContentLoaded', function () {
                         <div class="menu__item-cost">Цена:</div>
                         <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
                     </div>
-                </div>
-            `;
-      this.parent.append(element);
-    }
+            `; // вставляем нашу верстку в наш элемент который будет вставляться на страницу
 
-  } // const div = new MenuCard();
+      this.parent.append(element); // добавляем наш элемент в родителя
+    } // метод который будет рендерить верстку(формировать)
+
+
+  } // создаем класс(шаблон) для карточек
+  // const div = new MenuCard();
   // div.render();
 
 
-  new MenuCard("img/tabs/vegy.jpg", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 9, '.menu .container').render();
-  new MenuCard("img/tabs/elite.jpg", "elite", 'Меню “Премиум”', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 14, '.menu .container').render();
-  new MenuCard("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 21, '.menu .container').render();
+  new MenuCard("img/tabs/vegy.jpg", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 9, '.menu .container', 'menu__item', 'big').render(); // используем наш метод и объект на месте(на него не будет сссылок и он не будет сохраняться)
+
+  new MenuCard("img/tabs/elite.jpg", "elite", 'Меню “Премиум”', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 14, '.menu .container', 'menu__item').render();
+  new MenuCard("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 21, '.menu .container', 'menu__item').render();
 }); //техническая функция загрузки DOM
 
 /***/ })

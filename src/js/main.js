@@ -151,7 +151,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }); // будем закрывать наше окно по нажатию на клавишу esc
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 5000);
 
     function showModalByScroll() { // функция которая показывает окно при скролле до конца
         if (window.pageYOffset + this.document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1) {
@@ -236,4 +236,60 @@ window.addEventListener('DOMContentLoaded', function () {
         '.menu .container',
         'menu__item'
     ).render();
+
+    // Forms
+    // Отправка данных на сервер
+    const forms = document.querySelectorAll('form'); // получение всех форм
+
+    const message = {
+        loading: 'Загрузка',
+        success: 'Спасибо, мы с вами свяжемся',
+        failure: 'Что-то пошло не так'
+    }; // объект с сообщениями после отправки
+
+    forms.forEach(item => {
+        postData(item);
+    }); // под каждую форму подвязываем  нашу функцию postData
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // отменяем перезагрузку страницы
+
+            const statusMessage = document.createElement('div'); // создаем элемент(див) который будет добавляться к форме
+            statusMessage.classList.add('status'); // добавляем класс статус
+            statusMessage.textContent = message.loading; // помещаем сообщение в зависимости от стадии отправки данных
+            form.append(statusMessage); // добавляем наше сообщение к форме 
+
+            const req = new XMLHttpRequest(); // создаем объект XMLHttprequest
+            req.open('POST', 'server.php'); // настройка запроса 
+
+            req.setRequestHeader('Content-type', 'application/json; charset=utf-8'); // для JSON нужен заголовок 
+            // req.setRequestHeader('Content-type', 'multipart/form-data'); // когда мы используем связку htmlhttprequest и formdata то задавать заголовок не обязательно. Он формируется автоматически
+            const formData = new FormData(form); //  FormData - это специальный объект который позволяет из определенной формы быстро сформировать все данные которые заполнил пользователь с форматом ключ-значение
+
+            const object = {}; // создаем пустой объект куда будут помещаться наши данные 
+            formData.forEach(function (value, key) {
+                object[key] = value;
+            }); // переберем все что есть внутри и поместим все эти данные в object
+
+            const json = JSON.stringify(object); // конвертируем наш объект в json формат
+
+            req.send(json); // Отправляем наши данные
+
+            // req.send(formData); // отправляем наши данные
+
+            req.addEventListener('load', () => {
+                if (req.status === 200) { // проверяем что все окей
+                    console.log(req.response); // проверяем что все правильно произошло
+                    statusMessage.textContent = message.success; // исходя из проверки выводим другое сообщение
+                    form.reset(); // после успешной отправки очищаем нашу форму(input содержимое внутри него)
+                    setTimeout(() => {
+                        statusMessage.remove(); // удаляем наш блок со страницы 
+                    }, 2000); // задаем settimeout для очищения сообщения об отправке(т.е. сообщения очистится через определенное время)
+                } else {
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        }); // Отслеживаем конечную загрузку
+    } // функция которая отвечает за постинг данных 
 }); //техническая функция загрузки DOM

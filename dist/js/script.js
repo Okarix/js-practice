@@ -372,7 +372,8 @@ window.addEventListener('DOMContentLoaded', function () {
             `; // добавляем стили
       // form.append(statusMessage); // добавляем наше сообщение к форме 
 
-      form.insertAdjacentElement('afterend', statusMessage);
+      form.insertAdjacentElement('afterend', statusMessage); // наш спиннер будет добавляться после элементов
+
       const req = new XMLHttpRequest(); // создаем объект XMLHttprequest
 
       req.open('POST', 'server.php'); // настройка запроса 
@@ -415,24 +416,34 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
   function showThanksModal(message) {
-    const prevModalDialog = document.querySelector('.modal__dialog');
-    prevModalDialog.classList.add('hide');
-    openModal();
-    const thanksModal = document.createElement('div');
-    thanksModal.classList.add('modal__dialog');
+    const prevModalDialog = document.querySelector('.modal__dialog'); // получаем наш modal__dialog(в нем есть определенные которые необходимы для создания формы)
+
+    prevModalDialog.classList.add('hide'); // скрываем элемент перед тем как показать модальное окно
+
+    openModal(); // функция открытия модального окна
+
+    const thanksModal = document.createElement('div'); // блок обертка
+
+    thanksModal.classList.add('modal__dialog'); // назначаем класс 
+
     thanksModal.innerHTML = `
-            <div class="modal__content">
+            <div class="modal__content"> 
                 <div class="modal__close" data-close>&times;</div>
                 <div class="modal__title">${message}</div>
             </div>
-        `;
-    document.querySelector('.modal').append(thanksModal);
+        `; // формируем верстку
+
+    document.querySelector('.modal').append(thanksModal); // помещаем наш блок
+
     setTimeout(() => {
-      thanksModal.remove();
-      prevModalDialog.classList.add('show');
-      prevModalDialog.classList.remove('hide');
-      closeModal();
-    }, 4000);
+      thanksModal.remove(); // удаляем нашу созданную форму
+
+      prevModalDialog.classList.add('show'); // показываем наше предыдущее окно(с инпутами)
+
+      prevModalDialog.classList.remove('hide'); // убираем класс скрытия 
+
+      closeModal(); // закрываем наше окно чтобы не мешать пользователю
+    }, 4000); // через определенное время все возвращается на свои места
   }
 }); //техническая функция загрузки DOM
 

@@ -264,11 +264,6 @@ window.addEventListener('DOMContentLoaded', function () {
             // form.append(statusMessage); // добавляем наше сообщение к форме 
             form.insertAdjacentElement('afterend', statusMessage); // наш спиннер будет добавляться после элементов
 
-            const req = new XMLHttpRequest(); // создаем объект XMLHttprequest
-            req.open('POST', 'server.php'); // настройка запроса 
-
-            req.setRequestHeader('Content-type', 'application/json; charset=utf-8'); // для JSON нужен заголовок 
-            // req.setRequestHeader('Content-type', 'multipart/form-data'); // когда мы используем связку htmlhttprequest и formdata то задавать заголовок не обязательно. Он формируется автоматически
             const formData = new FormData(form); //  FormData - это специальный объект который позволяет из определенной формы быстро сформировать все данные которые заполнил пользователь с форматом ключ-значение
 
             const object = {}; // создаем пустой объект куда будут помещаться наши данные 
@@ -276,25 +271,23 @@ window.addEventListener('DOMContentLoaded', function () {
                 object[key] = value;
             }); // переберем все что есть внутри и поместим все эти данные в object
 
-            const json = JSON.stringify(object); // конвертируем наш объект в json формат
-
-            req.send(json); // Отправляем наши данные
-
-            // req.send(formData); // отправляем наши данные
-
-            req.addEventListener('load', () => {
-                if (req.status === 200) { // проверяем что все окей
-                    console.log(req.response); // проверяем что все правильно произошло
+            fetch('server.php', {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            })
+                .then(data => data.text())
+                .then(data => {
+                    console.log(data); // проверяем что все правильно произошло
                     showThanksModal(message.success); // исходя из проверки выводим другое сообщение
-                    form.reset(); // после успешной отправки очищаем нашу форму(input содержимое внутри него)
                     statusMessage.remove(); // удаляем наш блок со страницы 
-                    // setTimeout(() => {
-                    //     statusMessage.remove(); // удаляем наш блок со страницы 
-                    // }, 2000); // задаем settimeout для очищения сообщения об отправке(т.е. сообщения очистится через определенное время)
-                } else {
+                }).catch(() => {
                     showThanksModal(message.failure);
-                }
-            });
+                }).finally(() => {
+                    form.reset(); // после успешной отправки очищаем нашу форму(input содержимое внутри него)
+                });
         }); // Отслеживаем конечную загрузку
     } // функция которая отвечает за постинг данных 
 
@@ -321,4 +314,5 @@ window.addEventListener('DOMContentLoaded', function () {
             closeModal(); // закрываем наше окно чтобы не мешать пользователю
         }, 4000); // через определенное время все возвращается на свои места
     }
+
 }); //техническая функция загрузки DOM
